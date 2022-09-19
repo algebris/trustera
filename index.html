@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<script type="text/javascript" src="./ellipticcurve.js"></script>
+<script type="text/javascript" src="./crypto-sha256.js"></script>
+<script type="text/javascript" src="./jsbn.js"></script>
+<script type="text/javascript" src="./aes.js"></script>
+<script type="text/javascript" src="./crypto-js.js"></script>
+<script type="text/javascript" src="./cryptico.min.js"></script>
+<script type="text/javascript" src="./purify.js"></script>
+<head>
+<meta charset="utf-8" />
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0, user-scalable=no"
+/>
+<meta
+name="description"
+content="Serverless, decentralized and encrypted P2P chat based on Trystero"
+/>
+<link href="favicon.png" rel="icon" type="image/png" />
+<link rel="stylesheet" style="background-color: #090909;"/>
+<title>Trustero chat</title>
+</head>
+<body onClick='{rng_seed_time();}' style="background-color: #111017; color: #E4E9F0;">
+<header>
+</header>
+<div id="main-div" style="height: 1500px; width: 80%; margin: auto;">
+<img src="./Pidgeon.png" style="height: 75px; width: 75px;"/>
+<p id="Intro">
+Trustero P2P Chat: Serverless, decentralized, encrypted
+</p>
+<script type="text/javascript">
+    document.onkeydown = function (e) {
+        rng_seed_time();
+        rand=Crypto.SHA256(rand + Math.floor(Date.now()) + event.clientX + event.clientX + Math.random() + e)
+    }
+    async function checkImage(url){
+         const res = await fetch(url);
+         const buff = await res.blob();
+         return {'blob':res.blob, 'result':buff.type.startsWith('image/')}
+    }
+    //Some extra and useful crypto libraries were loaded, however only some of them are used.
+    privatekey = ''
+    publickey = ''
+    theirpublickey = ''
+    RSAKeys = ''
+    AESkey = 'optional'
+    loadimages = true
+    shareAudio = false
+    rand = Crypto.SHA256(Math.random())
+    function login() {        
+        user = document.getElementById("username").value
+        password = document.getElementById("password").value
+        mybits = parseInt(document.getElementById("bits").value);
+        RSAKeys = cryptico.generateRSAKey(Crypto.SHA256(Crypto.SHA256(user + password)), mybits)
+        publickey = cryptico.publicKeyString(RSAKeys)
+        document.getElementById("Info").innerHTML = "Your public key(share this to anyone who you wish to chat with): <br>" + publickey
+    }
+</script>
+
+Username:  <input class="textBox" id="username" type="text" width="75" required/><br><br>
+Password:  &nbsp<input class="textBox" type="password" id="password" type="text" width="75" required/>&nbsp&nbsp
+<input type="button" id="login" value="Login" onclick=login()><br><br>
+Counter-party public key:  <input class="textBox" id="theirpub" type="text" width="75" required/>&nbsp&nbsp<input type="button" id="enterchat" value="Enter chat"/><br>
+<style>
+div.myinfo {
+    width: 100%;
+    height: 55px;
+    word-wrap: break-word;
+    overflow-y: auto;
+    text-align: center;
+    padding: 20px;
+    border: 1px solid black;
+    }
+</style>
+<div id="Info" class="myinfo">
+</div>
+<br>
+<input class="textBox" id="mymessage" type="text" style="min-width: 210px; width: 23%" required/>&nbsp&nbsp
+<input type="button" id="sendbutton" value="Send message" onclick=""/>
+<style>
+div.scroll {
+    background-color: #090909;
+    color: #E4E9F0;
+    width: 100%;
+    height: 400px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    word-wrap: break-word;
+    text-align: center;
+    padding: 5px;
+    border: 2px;
+    }
+</style>
+<p></p>
+<p></p>
+<div class="scroll" id="messages"  width="500" height="400">
+</div>
+<script src="site.js" type="module">
+</script>
+<br><br>
+<div id="Outro" class="myinfo">
+About the project:<br><br>
+"Trust"ero uses the protocol of Trystero which is a purely JavaScript webRTC matchmaking system. This allows
+trustless peer to peer services. There is no external dependencies and no servers. The advantages are that you
+can audit and trust the code and fully eliminate the need for central servers making this a true decentralized chat.
+The chat rooms are completely private and password protected. They are generated based on the users public keys.<br>
+
+Want to test this for fun? Try opening up a second tab and joining a chat with yourself. You can also run this
+website on your local machine and verify the security of all the code involved. All chats are encrypted using
+RSA public key cryptography. Therefore, the sender signs and encrypts the message. This allows the receiver to
+verify that the sender is who he says he is and not someone pretending to be him. Also because it's encrypted
+only the receiver of a message is able to read it. This project is shown only as a demo. However it's easy to
+turn this into a fully fledged chat program for both Android and web. RSA public key cryptography is very rare
+among purely front end JavaScript projects. Also serverless architecture is usually complicated. However, this
+code shows how simple it can be thanks to Trystero and cryptico libraries. Hopefully more projects will use
+this strategy to make safe and serverless web pages, games, and decentralized applications.<br><br>
+</div><br>
+<a href="https://github.com/trusterop2p/trustero" style="color: #998BCB">https://github.com/trusterop2p/trustero</a>
+<br><br>
+Advanced options:<br><br>
+Login private key complexity(higher is more secure, lower is faster)
+<select id="bits">
+<option>512</option>
+<option>1024</option>
+<option>2048</option>
+</select>
+<br><br>
+AES Password for your private room. Share this with your counter-party and enter<br>
+it here before entering the room. This feature is optional for added security.
+<br>
+<input class="textBox" id="AESPW" type="password" width="150" required/>
+<br><br>
+<label>Display image links</label>
+<input id="checkedValue" type="checkbox" value=true onclick=changeval(this)>
+<script type="text/javascript">
+document.getElementById("checkedValue").checked = true;
+function changeval(myval) {
+    loadimages = myval.checked
+}
+</script>
+<label>Audio Call</label>
+<input id="checkedValue2" type="checkbox" value=false onclick=changeval2(this)>
+<script type="text/javascript">
+document.getElementById("checkedValue2").checked = false;
+function changeval2(myval) {
+    shareAudio = myval.checked
+}
+</script>
+</div>
+</body>
+</html>
